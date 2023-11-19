@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -14,17 +10,22 @@ public class RenderMeshInstancedTest : MonoBehaviour
 
 	private void Awake()
 	{
-		foreach (SceneView view in SceneView.sceneViews)
-		{
-			RenderPipelineManager.beginCameraRendering += HandleRenderStart;
-		}
+		RenderPipelineManager.beginCameraRendering += HandleRenderStart;
 
-		SceneView.beforeSceneGui += OnSceneGUI;
+		if (Application.isPlaying == false)
+			SceneView.beforeSceneGui += OnSceneGUI;
+	}
+
+	private void OnDestroy()
+	{
+		RenderPipelineManager.beginCameraRendering -= HandleRenderStart;
+
+		if (Application.isPlaying == false)
+			SceneView.beforeSceneGui -= OnSceneGUI;
 	}
 
 	private void OnSceneGUI(SceneView sceneView)
 	{
-		Debug.Log($"Draw sceneview: {sceneView.camera}");
 		RenderMeshInstanced(sceneView.camera);
 	}
 
